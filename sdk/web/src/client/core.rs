@@ -106,6 +106,15 @@ impl ClientCore {
         Ok(serde_wasm_bindgen::to_value(&data)?)
     }
 
+    pub(crate) async fn asp_state(&self) -> Result<JsValue, JsError> {
+        let data = self
+            .fetcher
+            .asp_state()
+            .await
+            .map_err(|e| JsError::new(&e.to_string()))?;
+        Ok(serde_wasm_bindgen::to_value(&data)?)
+    }
+
     pub(crate) async fn lookup_registered_public_key(
         &self,
         address: String,
@@ -188,8 +197,14 @@ impl ClientCore {
         let prover: Box<dyn stellar_private_payments_sdk::Prover> =
             Box::new(self.prover_bridge.clone());
 
-        stellar_private_payments_sdk::PrivatePool::init(pool_config, self.storage(), signer, prover)
-            .map_err(pool_err)
+        stellar_private_payments_sdk::PrivatePool::init(
+            pool_config,
+            self.storage(),
+            signer,
+            prover,
+            stellar_private_payments_sdk::SyncMode::Background,
+        )
+        .map_err(pool_err)
     }
 
     pub(crate) async fn register_public_keys(

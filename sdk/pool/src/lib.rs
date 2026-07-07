@@ -9,6 +9,7 @@
 //! ```no_run
 //! use stellar_private_payments_sdk::{
 //!     LocalProver, LocalSigner, LocalStorage, PrivatePool, PrivatePoolConfig, ProverArtifacts,
+//!     SyncMode,
 //!     types::{
 //!         ContractConfig, EncryptionPublicKey, NoteAmount, NotePublicKey, TransferRecipient,
 //!     },
@@ -36,9 +37,9 @@
 //!         "G...",
 //!     )?),
 //!     Box::new(LocalProver::from_artifacts(&artifacts)?),
+//!     SyncMode::Inline,
 //! )?;
 //!
-//! pool.sync().await?;
 //! pool.deposit(10_000_000u128.into()).await?;
 //!
 //! let recipient = TransferRecipient {
@@ -94,7 +95,8 @@ pub mod state {
     //! SQLite-backed local wallet and indexer state.
     pub use crate::core::process_local_state_batch;
     pub use ::state::{
-        APP_SETTING_BOOTNODE_CONFIG, APP_SETTING_EXPLORER, AccountKeys, DerivedUserNoteRow,
+        APP_SETTING_BOOTNODE_CONFIG, APP_SETTING_EXPLORER, AccountKeys,
+        CURRENT_DISCLAIMER_HASH_HEX, CURRENT_DISCLAIMER_TEXT_MD, DerivedUserNoteRow,
         PoolCommitmentRow, SqliteStorage, StoredUserKeys, process_events, process_notes,
     };
 }
@@ -118,8 +120,8 @@ pub use disclosure::{
 };
 pub use error::PoolError;
 pub use plan::PreparedTransactionPlan;
-pub use pool::PrivatePool;
-pub use prover::{LocalProver, Prover, ProverEngine};
+pub use pool::{PrivatePool, SyncMode};
+pub use prover::{LocalProver, NoopProver, Prover, ProverEngine};
 pub use signer::{LocalSigner, Signer};
 pub use storage::{LocalStorage, Storage};
 pub use transact::{
